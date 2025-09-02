@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Service - TrendifyMM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #10B981;
+            --accent: #F59E0B;
+            --dark: #1F2937;
+            --darker: #111827;
+            --light: #F9FAFB;
+            --gray: #9CA3AF;
+            --gradient-start: #8B5CF6;
+            --gradient-end: #EC4899;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --telegram-blue: #0088CC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 22px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .order-section {
+            padding: 160px 0 100px;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .order-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .service-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .service-category {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .service-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .service-minmax {
+            color: var(--gray);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .service-description {
+            color: var(--gray);
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .order-form {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--light);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .copy-button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-button i {
+            margin-right: 8px;
+        }
+
+        footer {
+            background: var(--darker);
+            padding: 30px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .bg-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: -250px;
+            right: -250px;
+        }
+
+        .bg-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            bottom: -200px;
+            left: -200px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px 0;
+            color: #EF4444;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+
+        .loading i {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .quantity-info {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* New styles for price calculation */
+        .price-calculation {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .price-calculation div {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .price-calculation .total-amount {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+        
+        .mmk-amount {
+            color: #10B981;
+            font-weight: 600;
+        }
+        
+        /* Live Preview Container Styles */
+        .preview-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+        }
+        
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .preview-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .preview-item {
+            margin-bottom: 12px;
+        }
+        
+        .preview-label {
+            font-weight: 500;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            font-weight: 600;
+            color: var(--light);
+            word-break: break-all;
+        }
+        
+        .preview-value.category {
+            color: var(--primary);
+        }
+        
+        .preview-value.amount {
+            color: var(--accent);
+        }
+        
+        .preview-value.mmk {
+            color: var(--secondary);
+        }
+        
+        .preview-value.service-id {
+            color: #8B5CF6;
+        }
+        
+        /* How to Use Container Styles */
+        .how-to-use {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+        }
+        
+        .how-to-use-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .how-to-use-content {
+            line-height: 1.8;
+        }
+        
+        .how-to-use-content p {
+            margin-bottom: 15px;
+        }
+        
+        .how-to-use-content a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .how-to-use-content a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .preview-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--secondary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-element bg-1"></div>
+    <div class="bg-element bg-2"></div>
+
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-img">TM</div>
+                <div class="logo-text">TrendifyMM</div>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="order-section">
+            <div class="container">
+                <a href="services.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Services
+                </a>
+                
+                <h2 class="section-title">Place Your Order</h2>
+                
+                <div id="orderContainer">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading service details...</p>
+                    </div>
+                </div>
+                
+                <!-- Live Preview Container -->
+                <div class="preview-container" id="previewContainer" style="display: none;">
+                    <h3 class="preview-title">Order Preview</h3>
+                    <div class="preview-content">
+                        <div class="preview-item">
+                            <div class="preview-label">Service Category</div>
+                            <div class="preview-value category" id="previewCategory">-</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Quantity</div>
+                            <div class="preview-value" id="previewQuantity">-</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Link</div>
+                            <div class="preview-value" id="previewLink">-</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Total Amount (USD)</div>
+                            <div class="preview-value amount" id="previewTotalUSD">-</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Total Amount (MMK)</div>
+                            <div class="preview-value mmk" id="previewTotalMMK">-</div>
+                        </div>
+                        <div class="preview-item">
+                            <div class="preview-label">Service ID</div>
+                            <div class="preview-value service-id" id="previewServiceId">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- How to Use Container -->
+                <div class="how-to-use" id="howToUseContainer" style="display: none;">
+                    <h3 class="how-to-use-title">How to Use</h3>
+                    <div class="how-to-use-content">
+                        <p>- သင့် Order ကိုတင်ရန် Copy Order Data ကိုနိုပ်ပါ</p>
+                        <p>- ရလာတဲ့ copy data များကို</p>
+                        <p>- Facebook Page Messenger - TrendifyMM သို့ပို့ပီး Order တင်ပါ</p>
+                        <p>- Link: <a href="https://www.facebook.com/profile.php?id=61579006394501&mibextid=ZbWKwL" target="_blank">https://www.facebook.com/profile.php?id=61579006394501&mibextid=ZbWKwL</a></p>
+                        <p>- Telegram မှ Order တင်ပါ</p>
+                        <p>- Link: <a href="https://t.me/+3U7hLMZy6vZhYzll" target="_blank">https://t.me/+3U7hLMZy6vZhYzll</a></p>
+                        <p>- ကျေးဇူးတင်ပါသည်။</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TrendifyMM. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Order data copied to clipboard!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderContainer = document.getElementById('orderContainer');
+            const previewContainer = document.getElementById('previewContainer');
+            const howToUseContainer = document.getElementById('howToUseContainer');
+            
+            // Get the selected service from localStorage
+            const selectedService = JSON.parse(localStorage.getItem('selectedService'));
+            
+            if (selectedService) {
+                // Get the service ID (try multiple possible property names)
+                const serviceId = selectedService.service || selectedService.serviceId || selectedService.id || 'N/A';
+                
+                // Display the service details
+                orderContainer.innerHTML = `
+                    <div class="order-card">
+                        <h3 class="service-name">${selectedService.name}</h3>
+                        <span class="service-category">${selectedService.category || 'General'}</span>
+                        <div class="service-price">$${selectedService.rate} per 1000</div>
+                        <div class="service-minmax">Minimum order: ${selectedService.min} | Maximum order: ${selectedService.max}</div>
+                        <p class="service-description">${selectedService.description || 'No description available.'}</p>
+                        
+                        <div class="order-form">
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" id="quantity" min="${selectedService.min}" max="${selectedService.max}" 
+                                       placeholder="Enter quantity" required value="${selectedService.min}">
+                                <div class="quantity-info">Please enter a value between ${selectedService.min} and ${selectedService.max}</div>
+                                
+                                <!-- Price calculation display -->
+                                <div class="price-calculation" id="priceCalculation">
+                                    <div>
+                                        <span>Unit Price:</span>
+                                        <span id="unitPrice">$${(selectedService.rate / 1000).toFixed(4)}</span>
+                                    </div>
+                                    <div>
+                                        <span>Quantity:</span>
+                                        <span id="displayQuantity">${selectedService.min}</span>
+                                    </div>
+                                    <div>
+                                        <span>Total Amount (USD):</span>
+                                        <span id="totalAmount">$${((selectedService.rate / 1000) * selectedService.min).toFixed(2)}</span>
+                                    </div>
+                                    <div>
+                                        <span>Total Amount (MMK):</span>
+                                        <span class="mmk-amount" id="totalAmountMMK">${Math.round((selectedService.rate / 1000) * selectedService.min * 4500)} MMK</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="link">Link</label>
+                                <input type="url" id="link" placeholder="Enter URL" required>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="button" class="copy-button" onclick="copyOrderData()">
+                                    <i class="fas fa-copy"></i> Copy Order Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Show the preview and how-to-use containers
+                previewContainer.style.display = 'block';
+                howToUseContainer.style.display = 'block';
+                
+                // Initialize preview with default values
+                updatePreview(selectedService, serviceId);
+                
+                // Add validation to quantity input
+                const quantityInput = document.getElementById('quantity');
+                const linkInput = document.getElementById('link');
+                const priceCalculation = document.getElementById('priceCalculation');
+                const unitPriceElement = document.getElementById('unitPrice');
+                const displayQuantityElement = document.getElementById('displayQuantity');
+                const totalAmountElement = document.getElementById('totalAmount');
+                const totalAmountMMKElement = document.getElementById('totalAmountMMK');
+                
+                // Calculate unit price
+                const unitPrice = selectedService.rate / 1000;
+                unitPriceElement.textContent = `$${unitPrice.toFixed(4)}`;
+                
+                quantityInput.addEventListener('change', function() {
+                    validateQuantity(this, selectedService.min, selectedService.max);
+                    updatePriceCalculation(unitPrice, selectedService);
+                    updatePreview(selectedService, serviceId);
+                });
+                
+                quantityInput.addEventListener('input', function() {
+                    validateQuantity(this, selectedService.min, selectedService.max);
+                    updatePriceCalculation(unitPrice, selectedService);
+                    updatePreview(selectedService, serviceId);
+                });
+                
+                linkInput.addEventListener('input', function() {
+                    updatePreview(selectedService, serviceId);
+                });
+                
+                // Function to update price calculation
+                function updatePriceCalculation(unitPrice, service) {
+                    const quantity = parseInt(quantityInput.value) || 0;
+                    
+                    if (quantity > 0) {
+                        priceCalculation.style.display = 'block';
+                        displayQuantityElement.textContent = quantity;
+                        
+                        const totalAmount = unitPrice * quantity;
+                        totalAmountElement.textContent = `$${totalAmount.toFixed(2)}`;
+                        
+                        // Calculate MMK amount (4500:1 conversion rate)
+                        const totalAmountMMK = Math.round(totalAmount * 4500);
+                        totalAmountMMKElement.textContent = `${totalAmountMMK} MMK`;
+                    } else {
+                        priceCalculation.style.display = 'none';
+                    }
+                }
+            } else {
+                // No service found in localStorage
+                orderContainer.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <p>No service selected. Please go back to the services page and select a service.</p>
+                        <a href="services.html" class="copy-button" style="display: inline-block; width: auto; margin-top: 20px; text-decoration: none;">
+                            Browse Services
+                        </a>
+                    </div>
+                `;
+            }
+            
+            // Function to update the preview container
+            function updatePreview(service, serviceId) {
+                const quantityInput = document.getElementById('quantity');
+                const linkInput = document.getElementById('link');
+                
+                const quantity = parseInt(quantityInput.value) || 0;
+                const link = linkInput.value || '-';
+                
+                // Update preview elements
+                document.getElementById('previewCategory').textContent = service.category || 'General';
+                document.getElementById('previewQuantity').textContent = quantity;
+                document.getElementById('previewLink').textContent = link;
+                document.getElementById('previewServiceId').textContent = serviceId;
+                
+                // Calculate and update amounts
+                if (quantity > 0) {
+                    const unitPrice = service.rate / 1000;
+                    const totalAmount = unitPrice * quantity;
+                    const totalAmountMMK = Math.round(totalAmount * 4500);
+                    
+                    document.getElementById('previewTotalUSD').textContent = `$${totalAmount.toFixed(2)}`;
+                    document.getElementById('previewTotalMMK').textContent = `${totalAmountMMK} MMK`;
+                } else {
+                    document.getElementById('previewTotalUSD').textContent = '-';
+                    document.getElementById('previewTotalMMK').textContent = '-';
+                }
+            }
+        });
+        
+        function validateQuantity(input, min, max) {
+            const value = parseInt(input.value);
+            
+            if (isNaN(value)) {
+                input.value = min;
+            } else if (value < min) {
+                input.value = min;
+            } else if (value > max) {
+                input.value = max;
+            }
+        }
+        
+        function copyOrderData() {
+            const selectedService = JSON.parse(localStorage.getItem('selectedService'));
+            const quantity = document.getElementById('quantity').value;
+            const link = document.getElementById('link').value;
+            
+            // Validate inputs
+            if (!quantity) {
+                alert('Please enter quantity');
+                return;
+            }
+            
+            if (!link) {
+                alert('Please enter a valid URL');
+                return;
+            }
+            
+            const quantityNum = parseInt(quantity);
+            if (quantityNum < selectedService.min || quantityNum > selectedService.max) {
+                alert(`Please enter a quantity between ${selectedService.min} and ${selectedService.max}`);
+                return;
+            }
+            
+            // Get the service ID (try multiple possible property names)
+            const serviceId = selectedService.service || selectedService.serviceId || selectedService.id || 'N/A';
+            
+            // Calculate total price
+            const pricePerUnit = selectedService.rate / 1000;
+            const totalPriceUSD = (pricePerUnit * quantityNum).toFixed(2);
+            const totalPriceMMK = Math.round(pricePerUnit * quantityNum * 4500);
+            
+            // Create properly formatted order message
+            const message = `Order Details:
+Service: ${selectedService.name}
+Service ID: ${serviceId}
+Quantity: ${quantity}
+Link: ${link}
+Total Amount (USD): $${totalPriceUSD}
+Total Amount (MMK): ${totalPriceMMK} MMK`;
+            
+            // Copy to clipboard
+            copyToClipboard(message);
+        }
+        
+        function copyToClipboard(text) {
+            // Create a temporary textarea element
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            
+            // Select and copy the text
+            textarea.select();
+            document.execCommand('copy');
+            
+            // Remove the textarea
+            document.body.removeChild(textarea);
+            
+            // Show toast notification
+            showToast('Order data copied to clipboard!');
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

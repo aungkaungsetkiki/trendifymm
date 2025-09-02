@@ -247,6 +247,17 @@
             line-height: 1.6;
         }
 
+        .service-id {
+            display: block;
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
         .order-button {
             background: linear-gradient(135deg, var(--secondary), #0D9488);
             color: white;
@@ -541,6 +552,7 @@
                     <span class="service-category">${service.category || 'General'}</span>
                     <div class="service-price">$${service.rate}</div>
                     <div class="service-minmax">Min: ${service.min} - Max: ${service.max}</div>
+                    <span class="service-id">Service ID: ${service.service}</span>
                     <p class="service-description">${service.description || 'No description available.'}</p>
                     <button class="order-button" data-service-id="${service.service}">Order Now</button>
                 `;
@@ -575,7 +587,8 @@
                 filteredServices = allServices.filter(service => 
                     service.name.toLowerCase().includes(searchTerm) || 
                     (service.description && service.description.toLowerCase().includes(searchTerm)) ||
-                    (service.category && service.category.toLowerCase().includes(searchTerm))
+                    (service.category && service.category.toLowerCase().includes(searchTerm)) ||
+                    (service.service && service.service.toString().includes(searchTerm))
                 );
             }
             
@@ -588,7 +601,7 @@
                 <div class="error-message">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
                     <p>${message}</p>
-                    <button class="cta-button" onclick="fetchServices()" style="margin-top: 20px;">
+                    <button class="order-button" onclick="fetchServices()" style="margin-top: 20px;">
                         Try Again
                     </button>
                 </div>

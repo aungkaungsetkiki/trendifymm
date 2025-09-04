@@ -443,6 +443,18 @@
         .toast.show {
             opacity: 1;
         }
+        
+        /* Validation error styles */
+        .error {
+            color: #EF4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input.invalid {
+            border-color: #EF4444;
+        }
     </style>
 </head>
 <body>
@@ -560,6 +572,7 @@
                                 <input type="number" id="quantity" min="${selectedService.min}" max="${selectedService.max}" 
                                        placeholder="Enter quantity" required value="${selectedService.min}">
                                 <div class="quantity-info">Please enter a value between ${selectedService.min} and ${selectedService.max}</div>
+                                <div class="error" id="quantityError">Please enter a valid quantity between ${selectedService.min} and ${selectedService.max}</div>
                                 
                                 <!-- Price calculation display -->
                                 <div class="price-calculation" id="priceCalculation">
@@ -585,6 +598,7 @@
                             <div class="form-group">
                                 <label for="link">Link</label>
                                 <input type="url" id="link" placeholder="Enter URL" required>
+                                <div class="error" id="linkError">Please enter a valid URL</div>
                             </div>
                             
                             <div class="button-group">
@@ -611,24 +625,79 @@
                 const displayQuantityElement = document.getElementById('displayQuantity');
                 const totalAmountElement = document.getElementById('totalAmount');
                 const totalAmountMMKElement = document.getElementById('totalAmountMMK');
+                const quantityError = document.getElementById('quantityError');
+                const linkError = document.getElementById('linkError');
                 
                 // Calculate unit price
                 const unitPrice = selectedService.rate / 1000;
                 unitPriceElement.textContent = `$${unitPrice.toFixed(4)}`;
                 
-                quantityInput.addEventListener('change', function() {
-                    validateQuantity(this, selectedService.min, selectedService.max);
+                // Function to validate quantity with better UX
+                function validateQuantity() {
+                    const value = parseInt(quantityInput.value);
+                    
+                    if (isNaN(value) || value < selectedService.min || value > selectedService.max) {
+                        quantityInput.classList.add('invalid');
+                        quantityError.style.display = 'block';
+                        return false;
+                    } else {
+                        quantityInput.classList.remove('invalid');
+                        quantityError.style.display = 'none';
+                        return true;
+                    }
+                }
+                
+                // Function to validate URL
+                function validateURL() {
+                    const url = linkInput.value;
+                    if (!url) {
+                        linkError.style.display = 'none';
+                        return false;
+                    }
+                    
+                    // Simple URL validation
+                    const pattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+                    const isValid = pattern.test(url);
+                    
+                    if (!isValid) {
+                        linkInput.classList.add('invalid');
+                        linkError.style.display = 'block';
+                        return false;
+                    } else {
+                        linkInput.classList.remove('invalid');
+                        linkError.style.display = 'none';
+                        return true;
+                    }
+                }
+                
+                quantityInput.addEventListener('blur', function() {
+                    validateQuantity();
                     updatePriceCalculation(unitPrice, selectedService);
                     updatePreview(selectedService, serviceId);
                 });
                 
                 quantityInput.addEventListener('input', function() {
-                    validateQuantity(this, selectedService.min, selectedService.max);
-                    updatePriceCalculation(unitPrice, selectedService);
+                    // Only validate and update if the input is a valid number
+                    const value = parseInt(this.value);
+                    if (!isNaN(value)) {
+                        updatePriceCalculation(unitPrice, selectedService);
+                        updatePreview(selectedService, serviceId);
+                    }
+                    
+                    // Hide error while typing
+                    quantityInput.classList.remove('invalid');
+                    quantityError.style.display = 'none';
+                });
+                
+                linkInput.addEventListener('blur', function() {
+                    validateURL();
                     updatePreview(selectedService, serviceId);
                 });
                 
                 linkInput.addEventListener('input', function() {
+                    // Hide error while typing
+                    linkInput.classList.remove('invalid');
+                    linkError.style.display = 'none';
                     updatePreview(selectedService, serviceId);
                 });
                 
@@ -690,93 +759,86 @@
                     document.getElementById('previewTotalMMK').textContent = '-';
                 }
             }
-        });
-        
-        function validateQuantity(input, min, max) {
-            const value = parseInt(input.value);
             
-            if (isNaN(value)) {
-                input.value = min;
-            } else if (value < min) {
-                input.value = min;
-            } else if (value > max) {
-                input.value = max;
-            }
-        }
-        
-        function copyOrderData() {
-            const selectedService = JSON.parse(localStorage.getItem('selectedService'));
-            const quantity = document.getElementById('quantity').value;
-            const link = document.getElementById('link').value;
-            
-            // Validate inputs
-            if (!quantity) {
-                alert('Please enter quantity');
-                return;
-            }
-            
-            if (!link) {
-                alert('Please enter a valid URL');
-                return;
-            }
-            
-            const quantityNum = parseInt(quantity);
-            if (quantityNum < selectedService.min || quantityNum > selectedService.max) {
-                alert(`Please enter a quantity between ${selectedService.min} and ${selectedService.max}`);
-                return;
-            }
-            
-            // Get the service ID (try multiple possible property names)
-            const serviceId = selectedService.service || selectedService.serviceId || selectedService.id || 'N/A';
-            
-            // Calculate total price
-            const pricePerUnit = selectedService.rate / 1000;
-            const totalPriceUSD = (pricePerUnit * quantityNum).toFixed(2);
-            const totalPriceMMK = Math.round(pricePerUnit * quantityNum * 4500);
-            
-            // Create properly formatted order message
-            const message = `Order Details:
+            // Make functions available globally
+            window.copyOrderData = function() {
+                const selectedService = JSON.parse(localStorage.getItem('selectedService'));
+                const quantity = document.getElementById('quantity').value;
+                const link = document.getElementById('link').value;
+                
+                // Validate inputs
+                if (!validateQuantity()) {
+                    alert(`Please enter a quantity between ${selectedService.min} and ${selectedService.max}`);
+                    document.getElementById('quantity').focus();
+                    return;
+                }
+                
+                if (!link) {
+                    alert('Please enter a valid URL');
+                    document.getElementById('link').focus();
+                    return;
+                }
+                
+                if (!validateURL()) {
+                    alert('Please enter a valid URL');
+                    document.getElementById('link').focus();
+                    return;
+                }
+                
+                const quantityNum = parseInt(quantity);
+                
+                // Get the service ID (try multiple possible property names)
+                const serviceId = selectedService.service || selectedService.serviceId || selectedService.id || 'N/A';
+                
+                // Calculate total price
+                const pricePerUnit = selectedService.rate / 1000;
+                const totalPriceUSD = (pricePerUnit * quantityNum).toFixed(2);
+                const totalPriceMMK = Math.round(pricePerUnit * quantityNum * 4500);
+                
+                // Create properly formatted order message
+                const message = `Order Details:
 Service: ${selectedService.name}
 Service ID: ${serviceId}
 Quantity: ${quantity}
 Link: ${link}
 Total Amount (USD): $${totalPriceUSD}
 Total Amount (MMK): ${totalPriceMMK} MMK`;
+                
+                // Copy to clipboard
+                copyToClipboard(message);
+            };
             
-            // Copy to clipboard
-            copyToClipboard(message);
-        }
-        
-        function copyToClipboard(text) {
-            // Create a temporary textarea element
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'absolute';
-            textarea.style.left = '-9999px';
-            document.body.appendChild(textarea);
+            window.copyToClipboard = function(text) {
+                // Create a temporary textarea element
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'absolute';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                
+                // Select and copy the text
+                textarea.select();
+                document.execCommand('copy');
+                
+                // Remove the textarea
+                document.body.removeChild(textarea);
+                
+                // Show toast notification
+                showToast('Order data copied to clipboard!');
+            };
             
-            // Select and copy the text
-            textarea.select();
-            document.execCommand('copy');
-            
-            // Remove the textarea
-            document.body.removeChild(textarea);
-            
-            // Show toast notification
-            showToast('Order data copied to clipboard!');
-        }
-        
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            // Hide toast after 3 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
+            window.showToast = function(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                
+                // Hide toast after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            };
+        });
     </script>
 </body>
 </html>
